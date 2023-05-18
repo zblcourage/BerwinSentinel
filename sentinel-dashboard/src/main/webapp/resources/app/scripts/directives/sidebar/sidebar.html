@@ -46,11 +46,24 @@
 
           <li ui-sref-active="active" ng-if="entry.isGateway">
             <a ui-sref="dashboard.gatewayApi({app: entry.app})">
-              <i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;&nbsp;API 管理</a>
+              <i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;&nbsp;API管理</a>
           </li>
+
+          <!-- nacos -->
+          <li ui-sref-active="active" ng-if="entry.isGateway">
+            <a ui-sref="dashboard.gatewayApiNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-tags"></i>&nbsp;&nbsp;&nbsp;NacosAPI管理</a>
+          </li>
+
           <li ui-sref-active="active" ng-if="entry.isGateway">
             <a ui-sref="dashboard.gatewayFlow({app: entry.app})">
               <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;流控规则</a>
+          </li>
+
+          <!-- nacos -->
+          <li ui-sref-active="active" ng-if="entry.isGateway">
+            <a ui-sref="dashboard.gatewayFlowNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;Nacos流控规则</a>
           </li>
 
           <li ui-sref-active="active" ng-if="!entry.isGateway">
@@ -58,22 +71,55 @@
               <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;流控规则</a>
           </li>
 
+          <!-- nacos -->
+          <li ui-sref-active="active" ng-if="!entry.isGateway">
+            <a ui-sref="dashboard.flowNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;Nacos流控规则</a>
+          </li>
+
           <li ui-sref-active="active">
             <a ui-sref="dashboard.degrade({app: entry.app})">
               <i class="glyphicon glyphicon-flash"></i>&nbsp;&nbsp;熔断规则</a>
           </li>
+
+          <!-- nacos -->
+          <li ui-sref-active="active">
+            <a ui-sref="dashboard.degradeNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-flash"></i>&nbsp;&nbsp;Nacos熔断规则</a>
+          </li>
+
           <li ui-sref-active="active" ng-if="!entry.isGateway">
             <a ui-sref="dashboard.paramFlow({app: entry.app})">
               <i class="glyphicon glyphicon-fire"></i>&nbsp;&nbsp;热点规则</a>
           </li>
+          <!-- nacos -->
+          <li ui-sref-active="active" ng-if="!entry.isGateway">
+            <a ui-sref="dashboard.paramFlowNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-fire"></i>&nbsp;&nbsp;Nacos热点规则</a>
+          </li>
+
           <li ui-sref-active="active">
             <a ui-sref="dashboard.system({app: entry.app})">
               <i class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;系统规则</a>
           </li>
+
+          <!-- naocs -->
+          <li ui-sref-active="active">
+            <a ui-sref="dashboard.systemNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;Nacos系统规则</a>
+          </li>
+
           <li ui-sref-active="active" ng-if="!entry.isGateway">
             <a ui-sref="dashboard.authority({app: entry.app})">
               <i class="glyphicon glyphicon-check"></i>&nbsp;&nbsp;授权规则</a>
           </li>
+
+          <!-- naocs -->
+          <li ui-sref-active="active" ng-if="!entry.isGateway">
+            <a ui-sref="dashboard.authorityNacos({app: entry.app})">
+              <i class="glyphicon glyphicon-check"></i>&nbsp;&nbsp;Nacos授权规则</a>
+          </li>
+
           <li ui-sref-active="active" ng-if="!entry.isGateway">
             <a ui-sref="dashboard.clusterAppServerList({app: entry.app})">
               <i class="glyphicon glyphicon-cloud"></i>&nbsp;&nbsp;集群流控</a>

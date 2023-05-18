@@ -124,6 +124,19 @@ angular
             });
           }]
         }
+      }).state("dashboard.flowNacos", {
+          templateUrl: "app/views/flow_v1.html",
+          url: "/nacos/flow/:app",
+          controller: "FlowNacosController",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/flowNacos.js"]
+                      })
+                  }]
+          }
       })
 
       .state('dashboard.flow', {
@@ -156,6 +169,21 @@ angular
             });
           }]
         }
+      })
+
+      .state("dashboard.paramFlowNacos", {
+          templateUrl: "app/views/param_flow.html",
+          url: "/nacos/paramFlow/:app",
+          controller: "ParamFlowNacosController",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/param_flow_nacos.js"]
+                      })
+                  }]
+          }
       })
 
       .state('dashboard.clusterAppAssignManage', {
@@ -237,6 +265,20 @@ angular
                 }]
             }
        })
+      .state("dashboard.authorityNacos", {
+          templateUrl: "app/views/authority.html",
+          url: "/nacos/authority/:app",
+          controller: "AuthorityRuleNacosController",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/authority_nacos.js"]
+                      })
+                  }]
+          }
+      })
 
       .state('dashboard.degrade', {
         templateUrl: 'app/views/degrade.html',
@@ -252,6 +294,20 @@ angular
             });
           }]
         }
+      }).state('dashboard.degradeNacos', {
+          templateUrl: 'app/views/degrade.html',
+          url: '/nacos/degrade/:app',
+          controller: 'DegradeNacosCtl',
+          resolve: {
+              loadMyFiles: ['$ocLazyLoad', function ($ocLazyLoad) {
+                  return $ocLazyLoad.load({
+                      name: 'sentinelDashboardApp',
+                      files: [
+                          'app/scripts/controllers/nacos/degrade_nacos.js',
+                      ]
+                  });
+              }]
+          }
       })
 
       .state('dashboard.system', {
@@ -268,6 +324,20 @@ angular
             });
           }]
         }
+      })
+      .state("dashboard.systemNacos", {
+          templateUrl: "app/views/system.html",
+          url: "/nacos/system/:app",
+          controller: "SystemNacosCtl",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/system_nacos.js"]
+                      })
+                  }]
+          }
       })
 
       .state('dashboard.machine', {
@@ -348,6 +418,19 @@ angular
             });
           }]
         }
+      }).state("dashboard.gatewayApiNacos", {
+          templateUrl: "app/views/gateway/api.html",
+          url: "/nacos/gateway/api/:app",
+          controller: "GatewayNacosApiCtl",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/gateway_api_nacos.js"]
+                      })
+                  }]
+          }
       })
 
       .state('dashboard.gatewayFlow', {
@@ -364,5 +447,18 @@ angular
                   });
               }]
           }
-      });
+      }).state("dashboard.gatewayFlowNacos", {
+          templateUrl: "app/views/gateway/flow.html",
+          url: "/nacos/gateway/flow/:app",
+          controller: "GatewayFlowNacosCtl",
+          resolve: {
+              loadMyFiles: ["$ocLazyLoad",
+                  function(e) {
+                      return e.load({
+                          name: "sentinelDashboardApp",
+                          files: ["app/scripts/controllers/nacos/gateway_flow_nacos.js"]
+                      })
+                  }]
+          }
+      })
   }]);

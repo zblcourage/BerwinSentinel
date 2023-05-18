@@ -2,9 +2,10 @@ var app = angular.module('sentinelDashboardApp');
 
 app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService',
   'ngDialog', 'GatewayFlowService', 'GatewayApiService', 'DegradeService', 'MachineService',
+  "GatewayFlowNacosService","GatewayApiNacosService","DegradeNacosService",
   '$interval', '$location', '$timeout',
   function ($scope, $stateParams, IdentityService, ngDialog,
-    GatewayFlowService, GatewayApiService, DegradeService, MachineService, $interval, $location, $timeout) {
+            GatewayFlowService, GatewayApiService, DegradeService, MachineService, GatewayFlowNacosService, GatewayApiNacosService, DegradeNacosService, $interval, $location, $timeout) {
 
     $scope.app = $stateParams.app;
 
@@ -40,15 +41,15 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
 
       var mac = $scope.macInputModel.split(':');
       GatewayApiService.queryApis($scope.app, mac[0], mac[1]).success(
-        function (data) {
-          if (data.code == 0 && data.data) {
-            $scope.apiNames = [];
+          function (data) {
+            if (data.code == 0 && data.data) {
+              $scope.apiNames = [];
 
-            data.data.forEach(function (api) {
-              $scope.apiNames.push(api["apiName"]);
-            });
-          }
-        });
+              data.data.forEach(function (api) {
+                $scope.apiNames.push(api["apiName"]);
+              });
+            }
+          });
     }
 
     var gatewayFlowRuleDialog;
@@ -143,15 +144,122 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
           alert('失败!');
         }
       }).error((data, header, config, status) => {
-          alert('未知错误');
+        alert('未知错误');
       });
     }
 
     function saveGatewayFlowRuleAndContinue() {
-        if (!GatewayFlowService.checkRuleValid(gatewayFlowRuleDialogScope.currentRule)) {
-            return;
-        }
+      if (!GatewayFlowService.checkRuleValid(gatewayFlowRuleDialogScope.currentRule)) {
+        return;
+      }
       GatewayFlowService.newRule(gatewayFlowRuleDialogScope.currentRule).success(function (data) {
+        if (data.code == 0) {
+          gatewayFlowRuleDialog.close();
+        } else {
+          alert('失败!');
+        }
+      });
+    }
+
+    $scope.addNewGatewayFlowRuleNacos = function (resource) {
+      if (!$scope.macInputModel) {
+        return;
+      }
+      var mac = $scope.macInputModel.split(':');
+      gatewayFlowRuleDialogScope = $scope.$new(true);
+
+      gatewayFlowRuleDialogScope.apiNames = $scope.apiNames;
+
+      gatewayFlowRuleDialogScope.intervalUnits = [{val: 0, desc: '秒'}, {val: 1, desc: '分'}, {val: 2, desc: '时'}, {val: 3, desc: '天'}];
+
+      gatewayFlowRuleDialogScope.currentRule = {
+        grade: 1,
+        app: $scope.app,
+        ip: mac[0],
+        port: mac[1],
+        resourceMode: gatewayFlowRuleDialogScope.apiNames.indexOf(resource) == -1 ? 0 : 1,
+        resource: resource,
+        interval: 1,
+        intervalUnit: 0,
+        controlBehavior: 0,
+        burst: 0,
+        maxQueueingTimeoutMs: 0
+      };
+
+      gatewayFlowRuleDialogScope.gatewayFlowRuleDialog = {
+        title: '新增网关流控规则-Nacos',
+        type: 'add',
+        confirmBtnText: '新增',
+        saveAndContinueBtnText: '新增并继续添加',
+        showAdvanceButton: true
+      };
+
+      gatewayFlowRuleDialogScope.useRouteID = function() {
+        gatewayFlowRuleDialogScope.currentRule.resource = '';
+      };
+
+      gatewayFlowRuleDialogScope.useCustormAPI = function() {
+        gatewayFlowRuleDialogScope.currentRule.resource = '';
+      };
+
+      gatewayFlowRuleDialogScope.useParamItem = function () {
+        gatewayFlowRuleDialogScope.currentRule.paramItem = {
+          parseStrategy: 0,
+          matchStrategy: 0
+        };
+      };
+
+      gatewayFlowRuleDialogScope.notUseParamItem = function () {
+        gatewayFlowRuleDialogScope.currentRule.paramItem = null;
+      };
+
+      gatewayFlowRuleDialogScope.useParamItemVal = function() {
+        gatewayFlowRuleDialogScope.currentRule.paramItem.pattern = "";
+      };
+
+      gatewayFlowRuleDialogScope.notUseParamItemVal = function() {
+        gatewayFlowRuleDialogScope.currentRule.paramItem.pattern = null;
+      };
+
+      gatewayFlowRuleDialogScope.saveRule = saveGatewayFlowRuleNacos;
+      gatewayFlowRuleDialogScope.saveRuleAndContinue = saveGatewayFlowRuleAndContinueNacos;
+      gatewayFlowRuleDialogScope.onOpenAdvanceClick = function () {
+        gatewayFlowRuleDialogScope.gatewayFlowRuleDialog.showAdvanceButton = false;
+      };
+      gatewayFlowRuleDialogScope.onCloseAdvanceClick = function () {
+        gatewayFlowRuleDialogScope.gatewayFlowRuleDialog.showAdvanceButton = true;
+      };
+
+      gatewayFlowRuleDialog = ngDialog.open({
+        template: '/app/views/dialog/gateway/flow-rule-dialog.html',
+        width: 780,
+        overlay: true,
+        scope: gatewayFlowRuleDialogScope
+      });
+    };
+
+    function saveGatewayFlowRuleNacos() {
+      if (!GatewayFlowNacosService.checkRuleValid(gatewayFlowRuleDialogScope.currentRule)) {
+        return;
+      }
+      GatewayFlowNacosService.newRule(gatewayFlowRuleDialogScope.currentRule).success(function (data) {
+        if (data.code === 0) {
+          gatewayFlowRuleDialog.close();
+          let url = '/dashboard/nacos/gateway/flow/' + $scope.app;
+          $location.path(url);
+        } else {
+          alert('失败!');
+        }
+      }).error((data, header, config, status) => {
+        alert('未知错误');
+      });
+    }
+
+    function saveGatewayFlowRuleAndContinueNacos() {
+      if (!GatewayFlowNacosService.checkRuleValid(gatewayFlowRuleDialogScope.currentRule)) {
+        return;
+      }
+      GatewayFlowNacosService.newRule(gatewayFlowRuleDialogScope.currentRule).success(function (data) {
         if (data.code == 0) {
           gatewayFlowRuleDialog.close();
         } else {
@@ -196,9 +304,9 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
     };
 
     function saveDegradeRule() {
-        if (!DegradeService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
-            return;
-        }
+      if (!DegradeService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
+        return;
+      }
       DegradeService.newRule(degradeRuleDialogScope.currentRule).success(function (data) {
         if (data.code == 0) {
           degradeRuleDialog.close();
@@ -211,9 +319,9 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
     }
 
     function saveDegradeRuleAndContinue() {
-        if (!DegradeService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
-            return;
-        }
+      if (!DegradeService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
+        return;
+      }
       DegradeService.newRule(degradeRuleDialogScope.currentRule).success(function (data) {
         if (data.code == 0) {
           degradeRuleDialog.close();
@@ -222,6 +330,69 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
         }
       });
     }
+
+    $scope.addNewDegradeRuleNacos = function (resource) {
+      if (!$scope.macInputModel) {
+        return;
+      }
+      var mac = $scope.macInputModel.split(':');
+      degradeRuleDialogScope = $scope.$new(true);
+      degradeRuleDialogScope.currentRule = {
+        enable: false,
+        grade: 0,
+        strategy: 0,
+        resource: resource,
+        limitApp: 'default',
+        app: $scope.app,
+        ip: mac[0],
+        port: mac[1]
+      };
+
+      degradeRuleDialogScope.degradeRuleDialog = {
+        title: '新增降级规则-Nacos',
+        type: 'add',
+        confirmBtnText: '新增',
+        saveAndContinueBtnText: '新增并继续添加'
+      };
+      degradeRuleDialogScope.saveRule = saveDegradeRuleNacos;
+      degradeRuleDialogScope.saveRuleAndContinue = saveDegradeRuleAndContinueNacos;
+
+      degradeRuleDialog = ngDialog.open({
+        template: '/app/views/dialog/degrade-rule-dialog.html',
+        width: 680,
+        overlay: true,
+        scope: degradeRuleDialogScope
+      });
+    };
+
+    function saveDegradeRuleNacos() {
+      if (!DegradeNacosService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
+        return;
+      }
+      DegradeNacosService.newRule(degradeRuleDialogScope.currentRule).success(function (data) {
+        if (data.code == 0) {
+          degradeRuleDialog.close();
+          var url = '/dashboard/nacos/degrade/' + $scope.app;
+          $location.path(url);
+        } else {
+          alert('失败!');
+        }
+      });
+    }
+
+    function saveDegradeRuleAndContinueNacos() {
+      if (!DegradeNacosService.checkRuleValid(degradeRuleDialogScope.currentRule)) {
+        return;
+      }
+      DegradeNacosService.newRule(degradeRuleDialogScope.currentRule).success(function (data) {
+        if (data.code == 0) {
+          degradeRuleDialog.close();
+        } else {
+          alert('失败!');
+        }
+      });
+    }
+
 
     var searchHandler;
     $scope.searchChange = function (searchKey) {
@@ -234,27 +405,27 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
 
     function queryAppMachines() {
       MachineService.getAppMachines($scope.app).success(
-        function (data) {
-          if (data.code === 0) {
-            if (data.data) {
-              $scope.machines = [];
+          function (data) {
+            if (data.code === 0) {
+              if (data.data) {
+                $scope.machines = [];
+                $scope.macsInputOptions = [];
+                data.data.forEach(function (item) {
+                  if (item.healthy) {
+                    $scope.macsInputOptions.push({
+                      text: item.ip + ':' + item.port,
+                      value: item.ip + ':' + item.port
+                    });
+                  }
+                });
+              }
+              if ($scope.macsInputOptions.length > 0) {
+                $scope.macInputModel = $scope.macsInputOptions[0].value;
+              }
+            } else {
               $scope.macsInputOptions = [];
-              data.data.forEach(function (item) {
-                if (item.healthy) {
-                  $scope.macsInputOptions.push({
-                    text: item.ip + ':' + item.port,
-                    value: item.ip + ':' + item.port
-                  });
-                }
-              });
             }
-            if ($scope.macsInputOptions.length > 0) {
-              $scope.macInputModel = $scope.macsInputOptions[0].value;
-            }
-          } else {
-            $scope.macsInputOptions = [];
           }
-        }
       );
     }
 
@@ -284,15 +455,15 @@ app.controller('GatewayIdentityCtl', ['$scope', '$stateParams', 'IdentityService
       }
 
       IdentityService.fetchClusterNodeOfMachine(mac[0], mac[1], $scope.searchKey).success(
-        function (data) {
-          if (data.code == 0 && data.data) {
-            $scope.identities = data.data;
-            $scope.totalCount = $scope.identities.length;
-          } else {
-            $scope.identities = [];
-            $scope.totalCount = 0;
+          function (data) {
+            if (data.code == 0 && data.data) {
+              $scope.identities = data.data;
+              $scope.totalCount = $scope.identities.length;
+            } else {
+              $scope.identities = [];
+              $scope.totalCount = 0;
+            }
           }
-        }
       );
     };
     $scope.queryIdentities = queryIdentities;

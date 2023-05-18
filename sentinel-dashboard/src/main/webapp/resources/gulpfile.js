@@ -58,6 +58,13 @@ const JS_APP = [
   'app/scripts/services/cluster_state_service.js',
   'app/scripts/services/gateway/api_service.js',
   'app/scripts/services/gateway/flow_service.js',
+  'app/scripts/services/nacos/auth_service_nacos.js',
+  'app/scripts/services/nacos/degradeservice_nacos.js',
+  'app/scripts/services/nacos/flow_service_nacos.js',
+  'app/scripts/services/nacos/gateway_api_service.js',
+  'app/scripts/services/nacos/gateway_flow_service.js',
+  'app/scripts/services/nacos/param_flow_service_nacos.js',
+  'app/scripts/services/nacos/systemservice_nacos.js'
 ];
 
 gulp.task('lib', function () {
@@ -71,7 +78,7 @@ gulp.task('lib', function () {
 
 /*
 * css任务
-* 在src下创建style文件夹，里面存放less文件。 
+* 在src下创建style文件夹，里面存放less文件。
 */
 gulp.task('css', function () {
   gulp.src(CSS_APP)
