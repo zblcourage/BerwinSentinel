@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-dashboard
+  namespace: default
+  labels:
+    app: sentinel-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel-dashboard
+  strategy:
+      rollingUpdate:
+        maxSurge: 50%
+        maxUnavailable: 50%
+      type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: sentinel-dashboard
+    spec:
+      containers:
+        - name: sentinel-dashboard
+          # 指定Docker Hub中的镜像地址
+          image:
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          env:
+            # 指定环境
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: DYNAMIC_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: NACOS-SERVER-ADDR
+              value: ""
+            - name: NACOS-NAMESPACE
+              value: "sentinel"
+          volumeMounts:
+            - mountPath: /var/logs
+              name: log-volume
+      volumes:
+        - name: log-volume
+          hostPath:
+            path: /mydata/sentinel/sentinel-dashboard/
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-dashboard
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: sentinel-dashboard
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
