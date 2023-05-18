@@ -58,4 +58,12 @@ java -Dserver.port=8080 \
 客户端正确配置并启动后，会**在初次调用后**主动向控制台发送心跳包，汇报自己的存在；
 控制台收到客户端心跳包之后，会在左侧导航栏中显示该客户端信息。如果控制台能够看到客户端的机器信息，则表明客户端接入成功了。
 
+## 4. 镜像打包
+
+Sentinel 控制台提供了 Dockerfile，可以通过如下命令将控制台打包成镜像：
+
+```bash
+docker build -f src/docker/Dockerfile -t XXX/sentinel-dashboard:nacos-1.8.6 .  
+```
+
 更多：[控制台功能介绍](./Sentinel_Dashboard_Feature.md)。
