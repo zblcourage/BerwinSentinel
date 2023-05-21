@@ -1,8 +1,8 @@
 package com.alibaba.csp.sentinel.dashboard.datasource.entity.influxdb;
 
 import java.time.Instant;
-import org.influxdb.annotation.Column;
-import org.influxdb.annotation.Measurement;
+import com.influxdb.annotations.Column;
+import com.influxdb.annotations.Measurement;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,9 +52,6 @@ public class MetricPO {
 
     @Column(name = "resourceCode")
     private int resourceCode;
-
-    // 生成以上所有参数的getter和setter方法
-
 
     public Instant getTime() {
         return time;

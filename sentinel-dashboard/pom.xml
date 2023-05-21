@@ -16,7 +16,7 @@
         <resource.delimiter>@</resource.delimiter>
         <spring.boot.version>2.5.12</spring.boot.version>
         <curator.version>4.0.1</curator.version>
-        <influxdbClient.version>2.23</influxdbClient.version>
+        <influxdbClient.version>6.8.0</influxdbClient.version>
     </properties>
 
     <dependencies>
@@ -138,11 +138,15 @@
         </dependency>
         <!--influxdb database-->
         <dependency>
-            <groupId>org.influxdb</groupId>
-            <artifactId>influxdb-java</artifactId>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
             <version>${influxdbClient.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>flux-dsl</artifactId>
+            <version>${influxdbClient.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
